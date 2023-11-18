@@ -308,6 +308,9 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
           ),
         );
         _markers.add(marker);
+
+        _mostRecentUserLocation =
+            LatLng(double.parse(coords[0]), double.parse(coords[1]));
       }
     });
   }
@@ -316,7 +319,7 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
     mapController = controller;
     if (_mostRecentUserLocation != null) {
       mapController?.animateCamera(
-          CameraUpdate.newLatLngZoom(_mostRecentUserLocation!, 15.0));
+          CameraUpdate.newLatLngZoom(_mostRecentUserLocation!, 12.0));
     }
   }
 
