@@ -54,7 +54,8 @@ class MainPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 // Get the user's location
-                Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                Position position = await Geolocator.getCurrentPosition(
+                    desiredAccuracy: LocationAccuracy.high);
 
                 // Send the data to the server
                 var response = await http.post(
@@ -100,6 +101,7 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   GoogleMapController? mapController;
   final Set<Marker> _markers = {};
+  LatLng? _mostRecentUserLocation;
 
   @override
   void initState() {
@@ -124,17 +126,25 @@ class _MapPageState extends State<MapPage> {
           position: LatLng(double.parse(coords[0]), double.parse(coords[1])),
           infoWindow: InfoWindow(
             title: item['name'],
-            snippet: 'Age: ${item['age']}, Severity Status: ${item['severity_status']}, Situation: ${item['situation']}',
+            snippet:
+                'Age: ${item['age']}, Severity Status: ${item['severity_status']}, Situation: ${item['situation']}',
           ),
         );
         _markers.add(marker);
+
+        _mostRecentUserLocation =
+            LatLng(double.parse(coords[0]), double.parse(coords[1]));
       }
     });
   }
 
-
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    // Set the initial camera position to the most recent user location
+    if (_mostRecentUserLocation != null) {
+      mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(_mostRecentUserLocation!, 13.0));
+    }
   }
 
   @override
@@ -147,8 +157,8 @@ class _MapPageState extends State<MapPage> {
         onMapCreated: _onMapCreated,
         markers: _markers,
         initialCameraPosition: CameraPosition(
-          target: LatLng(0, 0),
-          zoom: 2.0,
+          target: _mostRecentUserLocation ?? LatLng(0, 0),
+          zoom: 14.0,
         ),
       ),
     );
