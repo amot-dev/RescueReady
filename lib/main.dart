@@ -54,7 +54,7 @@ class HomePage extends StatelessWidget {
               'RESCUE ME',
               Icons.warning,
               Colors.red,
-                  () {
+              () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const RescueMePage()),
@@ -67,11 +67,10 @@ class HomePage extends StatelessWidget {
               'READY TO RESCUE',
               Icons.shield,
               Colors.green,
-                  () {
+              () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => ReadyToRescuePage()),
+                  MaterialPageRoute(builder: (context) => ReadyToRescuePage()),
                 );
               },
             ),
@@ -105,7 +104,6 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
 
 class RescueMePage extends StatefulWidget {
   const RescueMePage({Key? key}) : super(key: key);
@@ -153,8 +151,7 @@ class _RescueMePageState extends State<RescueMePage> {
     int severity = 0;
     if (selectedDangerLevel == 'Immediate Danger') {
       severity = 1;
-    }
-    else if (selectedDangerLevel == 'Grave Danger') {
+    } else if (selectedDangerLevel == 'Grave Danger') {
       severity = 2;
     }
 
@@ -280,6 +277,8 @@ class ReadyToRescuePage extends StatefulWidget {
 class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
   GoogleMapController? mapController;
   final Set<Marker> _markers = {};
+  LatLng?
+      _mostRecentUserLocation; // Variable to store the most recent user location
 
   @override
   void initState() {
@@ -304,7 +303,8 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
           position: LatLng(double.parse(coords[0]), double.parse(coords[1])),
           infoWindow: InfoWindow(
             title: item['name'],
-            snippet: 'Age: ${item['age']}, Severity Status: ${item['severity_status']}, Situation: ${item['situation']}',
+            snippet:
+                'Age: ${item['age']}, Severity Status: ${item['severity_status']}, Situation: ${item['situation']}',
           ),
         );
         _markers.add(marker);
@@ -312,9 +312,12 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
     });
   }
 
-
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    if (_mostRecentUserLocation != null) {
+      mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(_mostRecentUserLocation!, 15.0));
+    }
   }
 
   @override
@@ -328,7 +331,7 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
         markers: _markers,
         myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
-          target: LatLng(49.3, -122.9),
+          target: _mostRecentUserLocation ?? LatLng(0, 0),
           zoom: 12.0,
         ),
       ),
