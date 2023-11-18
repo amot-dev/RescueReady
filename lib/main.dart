@@ -41,41 +41,68 @@ class HomePage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Image.asset('assets/logo.png', width: 150),
-            ),
-            _buildButton(
-              context,
-              'RESCUE ME',
-              Icons.warning,
-              Colors.red,
-                  () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RescueMePage()),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            _buildButton(
-              context,
-              'READY TO RESCUE',
-              Icons.shield,
-              Colors.green,
-                  () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ReadyToRescuePage()),
-                );
-              },
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.lightBlue.withOpacity(0.5),
+              Colors.lightBlue.withOpacity(0.5),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Container(
+                  // Wrap the ClipOval in a Container
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        width: 2), // Black border
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/logo.png',
+                      width: 150,
+                    ),
+                  ),
+                ),
+              ),
+              _buildButton(
+                context,
+                'RESCUE ME',
+                Icons.warning,
+                Colors.red,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RescueMePage()),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildButton(
+                context,
+                'READY TO RESCUE',
+                Icons.shield,
+                Colors.green,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ReadyToRescuePage()),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -105,7 +132,6 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
 
 class RescueMePage extends StatefulWidget {
   const RescueMePage({Key? key}) : super(key: key);
@@ -153,8 +179,7 @@ class _RescueMePageState extends State<RescueMePage> {
     int severity = 0;
     if (selectedDangerLevel == 'Immediate Danger') {
       severity = 1;
-    }
-    else if (selectedDangerLevel == 'Grave Danger') {
+    } else if (selectedDangerLevel == 'Grave Danger') {
       severity = 2;
     }
 
@@ -207,7 +232,16 @@ class _RescueMePageState extends State<RescueMePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rescue Me'),
+        title: const Text(
+          'Rescue Ready',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor:
+            const Color.fromARGB(255, 145, 145, 145), // Set the background color to light grey
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -304,14 +338,14 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
           position: LatLng(double.parse(coords[0]), double.parse(coords[1])),
           infoWindow: InfoWindow(
             title: item['name'],
-            snippet: 'Age: ${item['age']}, Severity Status: ${item['severity_status']}, Situation: ${item['situation']}',
+            snippet:
+                'Age: ${item['age']}, Severity Status: ${item['severity_status']}, Situation: ${item['situation']}',
           ),
         );
         _markers.add(marker);
       }
     });
   }
-
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
