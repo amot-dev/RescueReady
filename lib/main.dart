@@ -303,8 +303,10 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
           position: LatLng(double.parse(coords[0]), double.parse(coords[1])),
           infoWindow: InfoWindow(
             title: item['name'],
-            snippet:
-                'Age: ${item['age']}, Severity Status: ${item['severity_status']}, Situation: ${item['situation']}',
+            snippet: '',
+            onTap: () {
+              _showRescueRequestDialog(item);
+            },
           ),
         );
         _markers.add(marker);
@@ -315,12 +317,196 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
     });
   }
 
+//   Future<List<LatLng>> fetchDirections(LatLng origin, LatLng destination) async {
+//   final apiKey = 'AIzaSyCj6g1VncqL7QfbxOiaTLoWDC9u1SU1HF4'; // Replace with your actual API key
+//   final apiUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+
+//   final response = await http.get(
+//     Uri.parse(
+//       '$apiUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey',
+//     ),
+//   );
+
+//   if (response.statusCode == 200) {
+//     final decodedResponse = json.decode(response.body);
+//     List<LatLng> points = [];
+
+//     if (decodedResponse['status'] == 'OK') {
+//       final List<dynamic> steps = decodedResponse['routes'][0]['legs'][0]['steps'];
+
+//       for (var step in steps) {
+//         final List<dynamic> polyline = step['polyline']['points'];
+//         points.addAll(_decodePolyline(polyline));
+//       }
+//     }
+
+//     return points;
+//   } else {
+//     throw Exception('Failed to load directions');
+//   }
+// }
+
+// List<LatLng> _decodePolyline(String encoded) {
+//   List<LatLng> points = [];
+//   int index = 0;
+//   int len = encoded.length;
+//   int lat = 0, lng = 0;
+
+//   while (index < len) {
+//     int b, shift = 0, result = 0;
+
+//     do {
+//       b = encoded.codeUnitAt(index++) - 63;
+//       result |= (b & 0x1F) << shift;
+//       shift += 5;
+//     } while (b >= 0x20);
+
+//     int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+//     lat += dlat;
+
+//     shift = 0;
+//     result = 0;
+
+//     do {
+//       b = encoded.codeUnitAt(index++) - 63;
+//       result |= (b & 0x1F) << shift;
+//       shift += 5;
+//     } while (b >= 0x20);
+
+//     int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+//     lng += dlng;
+
+//     points.add(LatLng(lat / 1E5, lng / 1E5));
+//   }
+
+//   return points;
+// }
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     if (_mostRecentUserLocation != null) {
       mapController?.animateCamera(
           CameraUpdate.newLatLngZoom(_mostRecentUserLocation!, 12.0));
     }
+  }
+
+  void _showRescueRequestDialog(Map<String, dynamic> item) {
+    bool isRescued = false;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, setState) {
+            return AlertDialog(
+              title: Text('Rescue Request'),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  _buildInfoText('Name', item['name']),
+                  _buildInfoText('Age', item['age']),
+                  _buildInfoText('Severity Status', item['severity_status']),
+                  _buildInfoText('Situation', item['situation']),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Rescue'),
+                  onPressed: () {
+                    // Add your logic for initiating the rescue
+                    setState(() {
+                      isRescued = true;
+                    });
+
+                    // Route the user to the marker
+                    _routeToMarker(item);
+                  },
+                ),
+                TextButton(
+                  child: Text('Rescue Complete'),
+                  onPressed: () {
+                    // Add your logic for marking the rescue as complete
+                    setState(() {
+                      isRescued = false;
+                    });
+
+                    // Remove the marker from the map
+                    _removeMarker(item);
+                  },
+                ),
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _routeToMarker(Map<String, dynamic> item) {
+    // Check if 'coordinates' property is present and is a string
+    if (item.containsKey('coordinates') && item['coordinates'] is String) {
+      String coordinates = item['coordinates'];
+      List<String> coords = coordinates.split(',');
+
+      if (coords.length == 2) {
+        // Convert string coordinates to double values
+        double lat = double.tryParse(coords[0]) ?? 0.0;
+        double lng = double.tryParse(coords[1]) ?? 0.0;
+
+        // Use the GoogleMapController to animate the camera to the marker position
+        if (mapController != null) {
+          mapController!.animateCamera(
+            CameraUpdate.newLatLngZoom(
+              LatLng(lat, lng),
+              15.0,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  void _removeMarker(Map<String, dynamic> item) {
+    // Implement your logic to remove the marker from the map
+    // You can use the item['coordinates'] to identify the marker
+    setState(() {
+      _markers.removeWhere(
+        (marker) => marker.markerId.value == item['coordinates'],
+      );
+    });
+
+    // Add any additional logic you need
+  }
+
+  Widget _buildInfoText(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: RichText(
+        text: TextSpan(
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.0,
+          ),
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+            TextSpan(text: value),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
