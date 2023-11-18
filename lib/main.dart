@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
-import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+const String serverUrl = "http://207.23.216.156:5000/data";
 
 void main() {
   runApp(const RescueReadyApp());
@@ -41,50 +44,108 @@ class HomePage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Image.asset('assets/logo.png', width: 150),
-            ),
-            _buildButton(
-              context,
-              'RESCUE ME',
-              Icons.warning,
-              Colors.red,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RescueMePage()),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            _buildButton(
-              context,
-              'READY TO RESCUE',
-              Icons.shield,
-              Colors.green,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ReadyToRescuePage()),
-                );
-              },
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.lightBlue.withOpacity(0.5),
+              Colors.lightBlue.withOpacity(0.5),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Container(
+                  // Wrap the ClipOval in a Container
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        width: 2), // Black border
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/logo.png',
+                      width: 150,
+                    ),
+                  ),
+                ),
+              ),
+              _buildButton(
+                context,
+                'RESCUE ME',
+                Icons.warning,
+                Colors.red,
+                    () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RescueMePage()),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildButton(
+                context,
+                'READY TO RESCUE',
+                Icons.shield,
+                Colors.green,
+                    () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ReadyToRescuePage()),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildButton(
+                context,
+                'LOCAL EMERGENCIES',
+                Icons.add_alert,
+                Colors.orange,
+                    () async {
+                  const url = 'https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=950b4eec577a4dc5b298a61adab41c06';
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildButton(
+                context,
+                'EMERGENCY GUIDES',
+                Icons.account_balance_wallet,
+                Colors.blue,
+                    () async {
+                  const url = 'https://www2.gov.bc.ca/gov/content/safety/emergency-management/preparedbc/guides-and-resources';
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildButton(BuildContext context, String text, IconData icon,
-      Color color, VoidCallback onPressed) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
+    Color color, VoidCallback onPressed) {
+      return ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: color,
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
@@ -157,7 +218,7 @@ class _RescueMePageState extends State<RescueMePage> {
 
     // Send the data to the server
     var response = await http.post(
-      Uri.parse('http://127.0.0.1:5000/data'),
+      Uri.parse(serverUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -204,7 +265,16 @@ class _RescueMePageState extends State<RescueMePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rescue Me'),
+        title: const Text(
+          'Rescue Ready',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor:
+            const Color.fromARGB(255, 145, 145, 145), // Set the background color to light grey
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -288,7 +358,7 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
 
   void _loadData() async {
     // Fetch the data from the server
-    var response = await http.get(Uri.parse('http://127.0.0.1:5000/data'));
+    var response = await http.get(Uri.parse(serverUrl));
 
     // Parse the response
     Map<String, dynamic> data = jsonDecode(response.body);
