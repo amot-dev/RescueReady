@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+const String serverUrl = "http://207.23.216.156:5000/data";
+
 void main() {
   runApp(const RescueReadyApp());
 }
@@ -157,7 +159,7 @@ class _RescueMePageState extends State<RescueMePage> {
 
     // Send the data to the server
     var response = await http.post(
-      Uri.parse('http://127.0.0.1:5000/data'),
+      Uri.parse(serverUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -288,7 +290,7 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
 
   void _loadData() async {
     // Fetch the data from the server
-    var response = await http.get(Uri.parse('http://127.0.0.1:5000/data'));
+    var response = await http.get(Uri.parse(serverUrl));
 
     // Parse the response
     Map<String, dynamic> data = jsonDecode(response.body);
