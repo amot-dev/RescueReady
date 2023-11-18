@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+const String serverUrl = "http://207.23.216.156:5000/data";
+
 void main() {
   runApp(const RescueReadyApp());
 }
@@ -185,7 +187,7 @@ class _RescueMePageState extends State<RescueMePage> {
 
     // Send the data to the server
     var response = await http.post(
-      Uri.parse('http://127.0.0.1:5000/data'),
+      Uri.parse(serverUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -314,6 +316,8 @@ class ReadyToRescuePage extends StatefulWidget {
 class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
   GoogleMapController? mapController;
   final Set<Marker> _markers = {};
+  LatLng?
+      _mostRecentUserLocation; // Variable to store the most recent user location
 
   @override
   void initState() {
@@ -323,7 +327,7 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
 
   void _loadData() async {
     // Fetch the data from the server
-    var response = await http.get(Uri.parse('http://127.0.0.1:5000/data'));
+    var response = await http.get(Uri.parse(serverUrl));
 
     // Parse the response
     Map<String, dynamic> data = jsonDecode(response.body);
@@ -343,12 +347,19 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
           ),
         );
         _markers.add(marker);
+
+        _mostRecentUserLocation =
+            LatLng(double.parse(coords[0]), double.parse(coords[1]));
       }
     });
   }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    if (_mostRecentUserLocation != null) {
+      mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(_mostRecentUserLocation!, 12.0));
+    }
   }
 
   @override
@@ -362,7 +373,7 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
         markers: _markers,
         myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
-          target: LatLng(49.3, -122.9),
+          target: _mostRecentUserLocation ?? LatLng(0, 0),
           zoom: 12.0,
         ),
       ),
