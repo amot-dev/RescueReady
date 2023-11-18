@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ec_2023.iml" filepath="$PROJECT_DIR$/ec_2023.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RescueReady.iml" filepath="$PROJECT_DIR$/RescueReady.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/ec_2023_android.iml" filepath="$PROJECT_DIR$/android/ec_2023_android.iml" />
     </modules>
   </component>

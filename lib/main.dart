@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
-import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const String serverUrl = "http://207.23.216.156:5000/data";
 
@@ -81,7 +82,7 @@ class HomePage extends StatelessWidget {
                 'RESCUE ME',
                 Icons.warning,
                 Colors.red,
-                () {
+                    () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -95,12 +96,42 @@ class HomePage extends StatelessWidget {
                 'READY TO RESCUE',
                 Icons.shield,
                 Colors.green,
-                () {
+                    () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => ReadyToRescuePage()),
                   );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildButton(
+                context,
+                'LOCAL EMERGENCIES',
+                Icons.add_alert,
+                Colors.orange,
+                    () async {
+                  const url = 'https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=950b4eec577a4dc5b298a61adab41c06';
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildButton(
+                context,
+                'EMERGENCY GUIDES',
+                Icons.account_balance_wallet,
+                Colors.blue,
+                    () async {
+                  const url = 'https://www2.gov.bc.ca/gov/content/safety/emergency-management/preparedbc/guides-and-resources';
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
                 },
               ),
             ],
@@ -111,10 +142,10 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildButton(BuildContext context, String text, IconData icon,
-      Color color, VoidCallback onPressed) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
+    Color color, VoidCallback onPressed) {
+      return ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: color,
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),

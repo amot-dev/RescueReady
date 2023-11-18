@@ -4,8 +4,12 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Our in-memory data store
+# In-memory data store
 data_store = {}
+
+@app.route("/")
+def index():
+    return "<p>Hi! This page isn't actually used for anything.</p>"
 
 @app.route('/data', methods=['POST'])
 def add_data():
@@ -35,4 +39,8 @@ def get_all_data():
     return jsonify(data_store), 200
 
 if __name__ == '__main__':
+    # To use https, run the below:
+    # openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+    #app.run(host='0.0.0.0', port=5000, ssl_context=('cert.pem', 'key.pem'), debug=False)
+    # Otherwise, comment above and uncomment below
     app.run(host='0.0.0.0', port=5000, debug=False)
