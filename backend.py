@@ -29,15 +29,10 @@ def add_data():
 
     return jsonify({'message': 'Data added successfully'}), 201
 
-@app.route('/data/<coordinates>', methods=['GET'])
-def get_data(coordinates):
-    # Get the data for the given coordinates
-    data = data_store.get(coordinates)
-
-    if data is None:
-        return jsonify({'message': 'No data found for these coordinates'}), 404
-
-    return jsonify(data), 200
+@app.route('/data', methods=['GET'])
+def get_all_data():
+    # Return all data
+    return jsonify(data_store), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

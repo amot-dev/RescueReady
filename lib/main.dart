@@ -112,15 +112,16 @@ class _MapPageState extends State<MapPage> {
     var response = await http.get(Uri.parse('http://127.0.0.1:5000/data'));
 
     // Parse the response
-    var data = jsonDecode(response.body);
+    Map<String, dynamic> data = jsonDecode(response.body);
 
     // Add the markers to the map
     setState(() {
-      for (var item in data) {
-        var coordinates = item['coordinates'].split(',');
+      for (var coordinates in data.keys) {
+        var item = data[coordinates];
+        var coords = coordinates.split(',');
         var marker = Marker(
-          markerId: MarkerId(item['coordinates']),
-          position: LatLng(double.parse(coordinates[0]), double.parse(coordinates[1])),
+          markerId: MarkerId(coordinates),
+          position: LatLng(double.parse(coords[0]), double.parse(coords[1])),
           infoWindow: InfoWindow(
             title: item['name'],
             snippet: 'Age: ${item['age']}, Severity Status: ${item['severity_status']}, Situation: ${item['situation']}',
@@ -130,6 +131,7 @@ class _MapPageState extends State<MapPage> {
       }
     });
   }
+
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
