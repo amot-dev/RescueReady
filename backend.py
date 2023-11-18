@@ -38,6 +38,15 @@ def get_all_data():
     # Return all data
     return jsonify(data_store), 200
 
+@app.route('/data/<coordinates>', methods=['DELETE'])
+def delete_data(coordinates):
+    # Delete the data
+    if coordinates in data_store:
+        del data_store[coordinates]
+        return jsonify({'message': 'Data deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'No data found for these coordinates'}), 404
+
 if __name__ == '__main__':
     # To use https, run the below:
     # openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
