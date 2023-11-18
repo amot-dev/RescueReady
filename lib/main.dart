@@ -146,9 +146,10 @@ class _MapPageState extends State<MapPage> {
       body: GoogleMap(
         onMapCreated: _onMapCreated,
         markers: _markers,
+        myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
-          target: LatLng(0, 0),
-          zoom: 2.0,
+          target: LatLng(49.3, -122.9),
+          zoom: 12.0,
         ),
       ),
     );
