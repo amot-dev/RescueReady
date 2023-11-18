@@ -30,13 +30,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  location: ^4.3.0 # Add this line
+  google_maps_flutter: ^2.1.1 # Add this line
+  geolocator: ^8.0.4
+
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.2.2
-  flutter_osm_plugin: ^0.70.2
+
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +63,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/logo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
