@@ -475,36 +475,42 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   _buildInfoText('Name', item['name']),
-                  _buildInfoText('Age', item['age']),
-                  _buildInfoText('Severity Status', item['severity_status']),
+                  _buildInfoText('Age', item['age'].toString()),
+                  _buildInfoText('Severity Status', item['severity_status'].toString()),
                   _buildInfoText('Situation', item['situation']),
                 ],
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Rescue'),
+                  child: Text('Start Rescue'),
                   onPressed: () {
-                    // Add your logic for initiating the rescue
+                    // TODO: Logic for initiating the rescue
                     setState(() {
                       isRescued = true;
                     });
 
-                    // Route the user to the marker
+                    // TODO: Route the user to the marker
                     _routeToMarker(item);
                   },
                 ),
                 TextButton(
-                  child: Text('Rescue Complete'),
-                  onPressed: () {
-                    // Add your logic for marking the rescue as complete
-                    setState(() {
-                      isRescued = false;
-                    });
-
+                  child: Text('Complete Rescue'),
+                  onPressed: () async {
                     // Remove the marker from the map
                     _removeMarker(item);
+
+                    // Delete the data from the server
+                    // TODO: Figure out why item['coordinates'] is null
+                    var url = Uri.parse(serverUrl + item['coordinates']);
+                    var response = await http.delete(url);
+                    if (response.statusCode == 200) {
+                      print('Data deleted successfully');
+                    } else {
+                      print('Failed to delete data');
+                    }
                   },
                 ),
+
                 TextButton(
                   child: Text('OK'),
                   onPressed: () {
@@ -544,15 +550,12 @@ class _ReadyToRescuePageState extends State<ReadyToRescuePage> {
   }
 
   void _removeMarker(Map<String, dynamic> item) {
-    // Implement your logic to remove the marker from the map
-    // You can use the item['coordinates'] to identify the marker
+    // # TODO: Proper logic to remove the marker from the map
     setState(() {
       _markers.removeWhere(
         (marker) => marker.markerId.value == item['coordinates'],
       );
     });
-
-    // Add any additional logic you need
   }
 
   Widget _buildInfoText(String label, String value) {
