@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const String serverUrl = "http://207.23.216.156:5000/data";
+const String serverUrl = "http://127.0.0.1:5000/data";
 
 void main() {
   runApp(const RescueReadyApp());
