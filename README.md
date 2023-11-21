@@ -1,5 +1,5 @@
-# Rescue Ready App
-Rescue Ready is a Flutter application designed to assist in emergency situations. The app provides a platform for users to request help, offer assistance, and access information about local emergencies and emergency guides.
+# RescueReady
+RescueReady is a Flutter application designed to assist in emergency situations. The app provides a platform for users to request help, offer assistance, and access information about local emergencies and emergency guides.
 
 ## Features
 - Rescue Me: Users can send a distress signal when they are in need of help.
