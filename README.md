@@ -1,4 +1,4 @@
-# RescueReady SFU Engineering Competetion 2023: 1st Place 🏆
+# RescueReady - SFU Engineering Competetion 2023 - 1st Place 🏆
 RescueReady is a Flutter application designed to assist in emergency situations. The app provides a platform for users to request help, offer assistance, and access information about local emergencies and emergency guides.
 
 ## Features
